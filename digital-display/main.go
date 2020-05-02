@@ -65,10 +65,10 @@ func main() {
 		units := i % 10
 		tens := (i / 10) % 10
 		hundreds := (i / 100) % 10
-		writeByteToFile(file, Digits[units], int64(addr))
-		writeByteToFile(file, Digits[tens], int64(addr+256))
-		writeByteToFile(file, Digits[hundreds], int64(addr+512))
-		writeByteToFile(file, Digits[DisplayAllOff], int64(addr+768))
+		WriteByteToFile(file, Digits[units], int64(addr))
+		WriteByteToFile(file, Digits[tens], int64(addr+256))
+		WriteByteToFile(file, Digits[hundreds], int64(addr+512))
+		WriteByteToFile(file, Digits[DisplayAllOff], int64(addr+768))
 		addr++
 	}
 
@@ -80,30 +80,32 @@ func main() {
 		tens := (iAbs / 10) % 10
 		hundreds := (iAbs / 100) % 10
 		a := int64(byte(i)) + int64(addr)
-		writeByteToFile(file, Digits[units], int64(a))
-		writeByteToFile(file, Digits[tens], int64(a+256))
-		writeByteToFile(file, Digits[hundreds], int64(a+512))
+		WriteByteToFile(file, Digits[units], int64(a))
+		WriteByteToFile(file, Digits[tens], int64(a+256))
+		WriteByteToFile(file, Digits[hundreds], int64(a+512))
 		if i < 0 {
-			writeByteToFile(file, Digits[DisplayMinus], int64(a+768))
+			WriteByteToFile(file, Digits[DisplayMinus], int64(a+768))
 		} else {
-			writeByteToFile(file, Digits[DisplayAllOff], int64(a+768))
+			WriteByteToFile(file, Digits[DisplayAllOff], int64(a+768))
 		}
 	}
 
 	// fill in the rest of the file to fit eeprom size
 	addr += 1024
 	for i := addr; i < EepromSize; i++ {
-		writeByteToFile(file, Digits[DisplayAllOn], int64(i))
+		WriteByteToFile(file, Digits[DisplayAllOn], int64(i))
 	}
 }
 
-func writeByteToFile(f *os.File, b byte, off int64) {
+// WriteByteToFile writes a byte to a file at a given offset
+func WriteByteToFile(f *os.File, b byte, off int64) {
 	n, err := f.WriteAt([]byte{b}, off)
 	if n != 1 || err != nil {
 		log.Printf("Error writing byte %08b (0x%02x) at address %02x\n", b, b, off)
 	}
 }
 
+// Abs gives the absolute value of an int (standard Abs, uses floats)
 func Abs(a int) int {
 	if a < 0 {
 		return a * -1
